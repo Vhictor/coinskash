@@ -47,9 +47,6 @@ public class ImplUserService implements UserService {
     }else {
         log.info("The user value is null");
     }
-
-
-
     }
 
     @Override
