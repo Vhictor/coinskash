@@ -1,6 +1,5 @@
 package com.coinskash.model.converter;
 
-import com.coinskash.converter.model.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Rate {

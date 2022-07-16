@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class AppAccount {
     @JsonProperty("accountNumber")
-    private String accountNumber="76767677";
+    private String accountNumber;
     @JsonProperty("bankCode")
-    private String bankCode="445";
+    private String bankCode;
 }
