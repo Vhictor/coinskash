@@ -1,23 +1,20 @@
-package com.coinskash.validation;
+package com.coinskash.model.app;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
-@NoArgsConstructor
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ValidationResponseData {
-    @JsonProperty("_id")
-    private String _id;
-    @JsonProperty("accountName")
-    private String accountName;
+public class AccountNoAndBankName {
     @JsonProperty("accountNumber")
     private String accountNumber;
-    @JsonProperty("bankCode")
-    private String bankCode;
+    @JsonProperty("bankName")
+    private String bankName;
 
+    public AccountNoAndBankName(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 }

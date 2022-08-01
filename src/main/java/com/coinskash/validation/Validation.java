@@ -1,6 +1,8 @@
 package com.coinskash.validation;
 
-import com.coinskash.model.app.AppAccount;
+import com.coinskash.config.PropertiesConfig;
+import com.coinskash.model.app.AccountNoAndBankCode;
+import com.coinskash.model.app.AccountNoAndBankName;
 import com.coinskash.response.ValidationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,26 +11,57 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class Validation {
-    @Autowired
     private WebClient webClient;
-    public Mono<ValidationResponse> isValidateAccountAccount(AppAccount account){
-        Mono<ValidationResponse> account1 = webClient.post()
-                .uri("https://sandboxapi.fincra.com/core/accounts/resolve")
+    private PropertiesConfig propertiesConfig;
+
+    @Autowired
+    public Validation(WebClient webClient, PropertiesConfig propertiesConfig) {
+        this.webClient = webClient;
+        this.propertiesConfig = propertiesConfig;
+    }
+
+    public ValidationResponse isValidateAccountAccount(AccountNoAndBankCode account) {
+        ValidationResponse account1 = webClient.post()
+                .uri(propertiesConfig.getVerifyAccountUrl())
                 .accept(MediaType.APPLICATION_JSON)
-                .header("api-key","Bvgt8zLovHrjt4cRwkSSxNa5ppQ9xazf")
+                .header("api-key", propertiesConfig.getFincraAccountApiKey())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(account),AppAccount.class)
+                .body(Mono.just(account), AccountNoAndBankCode.class)
                 .exchangeToMono(clientResponse -> {
-                    if(clientResponse.statusCode().equals(HttpStatus.OK)){
+                    if (clientResponse.statusCode().equals(HttpStatus.OK)) {
                         return clientResponse.bodyToMono(ValidationResponse.class);
-                    }else {
-                       return clientResponse.createException().flatMap(Mono::error);
+                    } else {
+                        return clientResponse.createException().flatMap(Mono::error);
                     }
-                });
-       return account1;
+                }).block();
+        return account1;
 //        if(account1.equals(account))return true;
 //        else return false;
+    }
+
+    public BankData getBankCode(AccountNoAndBankName accountNoAndBankName) {
+        Banks bank = webClient.get()
+                .uri(propertiesConfig.getBanksAndBankcodeUrl())
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve().bodyToMono(Banks.class).log().block();
+        BankData[] bankData = bank.getData();
+        return Arrays.stream(bankData).filter(bankData1 ->
+                bankData1.name.equals(accountNoAndBankName.getBankName())
+        ).findFirst().get();
+    }
+
+    public List<BankData> getAllBanks() {
+        Banks bank = webClient.get()
+                .uri(propertiesConfig.getBanksAndBankcodeUrl())
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve().bodyToMono(Banks.class).log().block();
+        BankData[] bankData = bank.getData();
+        return Arrays.stream(bankData).collect(Collectors.toList());
     }
 }

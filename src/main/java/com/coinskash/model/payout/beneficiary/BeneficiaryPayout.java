@@ -5,25 +5,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
 @Data
-@Entity(name = "beneficiaries")
+@Entity(name = "beneficiaryPayout")
 @Table
-public class Beneficiary {
+public class BeneficiaryPayout {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
     private String firstName;
     private String lastName;
+    @Value("${payout.beneficiary.type}")
     private String type;
     private String accountHolderName;
     private String accountNumber;
     @JsonIgnore
     private String country;
-//    @JsonIgnore
-//    private Address address;
 //    @JsonIgnore
 //    private Document document;
     @JsonIgnore
@@ -38,7 +38,7 @@ public class Beneficiary {
     private String sortCode;
     @JsonIgnore
     private String registrationNumber;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "app_user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
