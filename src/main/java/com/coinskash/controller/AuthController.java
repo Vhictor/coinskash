@@ -100,7 +100,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/generate-reset-password-token")
+    @PostMapping("/reset-password/token")
     private String generateUserToken (@RequestParam(value = "email") String email){
         AppUser appUser =  userService.getUser(email);
         if (Objects.isNull(appUser)){
