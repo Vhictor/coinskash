@@ -1,9 +1,12 @@
 package com.coinskash.service;
 
+import com.coinskash.exception.InvalidTokenException;
 import com.coinskash.model.AppUser;
 import com.coinskash.model.Roles;
+import com.coinskash.model.VerificationToken;
 import com.coinskash.repository.RolesRepository;
 import com.coinskash.repository.UserRepository;
+import com.coinskash.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +26,9 @@ public class ImplUserService implements UserService {
 
     private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private EmailService emailService;
+    private VerificationTokenService tokenService;
 
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -52,6 +60,48 @@ public class ImplUserService implements UserService {
     @Override
     public AppUser getUser(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public void changeUserPassword(AppUser appUser, String newPassword) {
+        appUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(appUser);
+    }
+
+    @Override
+    public boolean verifyUser(String token) throws InvalidTokenException {
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
+        if (Objects.isNull(verificationToken)){
+            throw new InvalidTokenException("Token is not valid");
+        }
+        Optional<AppUser> optionalAppUser =  userRepository.findById(verificationToken.getUser().getId());
+        if (optionalAppUser.isEmpty()){
+        log.info("Optional data is empty");
+        return false;
+        }
+        AppUser appUser = optionalAppUser.get();
+        appUser.setVerified(true);
+        userRepository.save(appUser);
+        verificationTokenRepository.removeByToken(token);
+        return true;
+    }
+
+    @Override
+    public boolean verifyUserTokenAndResetPassword(String token, String newPassword) throws InvalidTokenException {
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
+        if (Objects.isNull(verificationToken)){
+            throw new InvalidTokenException("Token is not valid");
+        }
+        Optional<AppUser> optionalAppUser =  userRepository.findById(verificationToken.getUser().getId());
+        if (optionalAppUser.isEmpty()){
+            log.info("Optional data is empty");
+            return false;
+        }
+        AppUser appUser = optionalAppUser.get();
+        appUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(appUser);
+        verificationTokenRepository.removeByToken(token);
+        return true;
     }
 
     @Override
