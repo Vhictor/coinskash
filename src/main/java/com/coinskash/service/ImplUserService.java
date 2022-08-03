@@ -98,6 +98,7 @@ public class ImplUserService implements UserService {
             return false;
         }
         AppUser appUser = optionalAppUser.get();
+        log.info("The name of the user is {} new password is {} ",appUser.getFirstName(), newPassword);
         appUser.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(appUser);
         verificationTokenRepository.removeByToken(token);
