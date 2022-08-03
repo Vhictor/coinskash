@@ -1,7 +1,8 @@
 package com.coinskash.payout;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PayoutResponseData {
     @JsonProperty("id")
     private String id;
@@ -11,7 +12,7 @@ public class PayoutResponseData {
     private String customerReference;
     @JsonProperty("status")
     private String status;
-    @JsonProperty("documentRequired")
-    private String documentRequired;
+    @JsonProperty("documentsRequired")
+    private String[] documentsRequired;
 
 }

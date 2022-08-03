@@ -36,6 +36,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         authenticationFilter.setFilterProcessesUrl("/api/login");
         http.csrf().disable().authorizeRequests()
                 .antMatchers(GET, "/api/").permitAll()
+                .antMatchers(POST, "/api/verifyAccount").permitAll()
+                .antMatchers(GET, "/api/cryptoPaymentCall").permitAll()
+                .antMatchers(POST, "/api/rates").permitAll()
+                .antMatchers(POST, "/api/bankcode").permitAll()
+                .antMatchers(GET, "/api/allBanks").permitAll()
                 .antMatchers(POST, "/api/login/**").permitAll()
                 .antMatchers(POST, "/api/register/**").permitAll()
                 .antMatchers(POST, "/api/reset-password/**").permitAll()
