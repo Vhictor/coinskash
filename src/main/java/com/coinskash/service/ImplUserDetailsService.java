@@ -1,11 +1,9 @@
 package com.coinskash.service;
 
 import com.coinskash.model.AppUser;
-import com.coinskash.model.Roles;
 import com.coinskash.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +17,7 @@ import java.util.*;
 @Service @RequiredArgsConstructor @Transactional
 public class ImplUserDetailsService implements UserDetailsService {
 
-
+    @Autowired
     private final UserRepository userRepository;
 
     @Override
@@ -28,11 +26,13 @@ public class ImplUserDetailsService implements UserDetailsService {
         if (userData == null){
             throw new UsernameNotFoundException(username);
         }
+        boolean enabled = !userData.isVerified();
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         userData.getRoles().forEach(role -> {
             authorities.add(new SimpleGrantedAuthority(role.getRole()));
         });
-        return new User(userData.getUsername(),userData.getPassword(), authorities);
+
+        return new User(userData.getUsername(),userData.getPassword(),enabled,true,true,true, authorities);
     }
 
 

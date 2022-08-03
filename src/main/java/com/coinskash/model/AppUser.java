@@ -10,6 +10,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,6 +40,13 @@ public class AppUser {
     @NotBlank(message = "Password is required*")
     @Column(name = "password")
     private String password;
+
+    @Column(name = "verified")
+    private boolean isVerified;
+
+    @Column(name = "verification_token")
+    @OneToMany(mappedBy = "user")
+    private Set<VerificationToken> verificationToken;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
