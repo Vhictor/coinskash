@@ -2,9 +2,11 @@ package com.coinskash.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.coinskash.exception.DataNotFoundException;
 import com.coinskash.model.AppUser;
 import com.coinskash.service.ImplUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -42,9 +44,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         try {
             AppUser appUser = new ObjectMapper().readValue(request.getInputStream(), AppUser.class);
+            log.info("This user is enabled value is {} ",appUser.isVerified());
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(appUser.getUsername(),appUser.getPassword());
             return authenticationManager.authenticate(authenticationToken);
-        } catch (IOException e) {
+        } catch (IOException e ) {
             throw new RuntimeException(e.getMessage());
         }
 //        String username = request.getParameter("username");
@@ -75,5 +78,16 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         //To send my token as a json response
         response.setContentType("application/json");
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+    }
+
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        super.unsuccessfulAuthentication(request, response, failed);
+        try {
+            throw new DataNotFoundException("Invalid login details");
+        } catch (DataNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
