@@ -1,36 +1,48 @@
 package com.coinskash.model.payout.beneficiary;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.coinskash.model.AppUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import javax.persistence.*;
+@Data
+@Entity(name = "beneficiaries")
+@Table
 public class Beneficiary {
-    @JsonProperty("country")
-    private String country;
-    @JsonProperty("address")
-    private Address address;
-    @JsonProperty("document")
-    private Document document;
-    @JsonProperty("firstName")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id;
     private String firstName;
-    @JsonProperty("lastName")
     private String lastName;
-    @JsonProperty("email")
-    private String email;
-    @JsonProperty("type")
     private String type;
-    @JsonProperty("accountHolderName")
     private String accountHolderName;
-    @JsonProperty("accountNumber")
     private String accountNumber;
-    @JsonProperty("mobileMoneyCode")
+    @JsonIgnore
+    private String country;
+//    @JsonIgnore
+//    private Address address;
+//    @JsonIgnore
+//    private Document document;
+    @JsonIgnore
+    private String email;
+    @JsonIgnore
     private String mobileMoneyCode;
-    @JsonProperty("bankCode")
+    @JsonIgnore
     private String bankCode;
-    @JsonProperty("bankSwiftCode")
+    @JsonIgnore
     private String bankSwiftCode;
-    @JsonProperty("sortCode")
+    @JsonIgnore
     private String sortCode;
-    @JsonProperty("registrationNumber")
+    @JsonIgnore
     private String registrationNumber;
+    @ManyToOne
+    @JoinColumn(name = "app_user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private AppUser appUser;
 
 
 }
