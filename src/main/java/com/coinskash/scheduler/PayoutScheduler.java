@@ -12,8 +12,8 @@ public class PayoutScheduler {
     @Autowired
     private Payout payout;
     @Scheduled(cron = "0 */1 * * * *")
-    private PayoutResponse fincraPayout() {
+    private void fincraPayout() {
         log.info("scheduler started, searching for unprocessed transaction...");
-        return payout.payout();
+         payout.payout();
     }
 }
