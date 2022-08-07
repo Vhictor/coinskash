@@ -5,6 +5,7 @@ import com.coinskash.converter.Converter;
 import com.coinskash.crypto.AcceptCrypto;
 import com.coinskash.crypto.AcceptCryptoPaymentData;
 import com.coinskash.crypto.AcceptCryptoPaymentResponse;
+import com.coinskash.exception.GlobalRequestException;
 import com.coinskash.helper.UserHelper;
 import com.coinskash.model.ResponseDataFormat;
 import com.coinskash.model.app.CryptoCurrency;
@@ -12,7 +13,10 @@ import com.coinskash.response.DepositWEbhookResponse;
 import com.coinskash.service.ImplTransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -52,13 +56,13 @@ public class AcceptCryptoController {
             Double amountInCrypto = converter.crytoToFiat(cryptoCurrency).getCurrency();
             log.info("Successfully converted the crypto amount to fiat amount, now updating the transaction record");
             implTransactionService.updateTransactionAcceptCryptoStatus(
-                    userHelper.getUserId(),
                     uuid,
                     depositWEbhookResponse.getAmountPaid(),
                     amountInCrypto,
                     depositWEbhookResponse.getSenderAddress(),
                     depositWEbhookResponse.getCoin()
             );
+            return new ResponseDataFormat("OK", "Transaction confirmed.");
         }
         log.warn("unconfirmed transaction detected with reference number ", depositWEbhookResponse.getReference());
         /*
@@ -68,11 +72,10 @@ public class AcceptCryptoController {
          * if the uuid is present and the payment status to true and proceed to pay fiat to user account detail
          */
 
-        return new ResponseDataFormat("OK", "Transaction confirmed.");
     }
 
     @GetMapping("/cryptoPaymentCall")
-    public AcceptCryptoPaymentResponse makeCryptoPaymentCall() {
+    public Mono<ResponseEntity<AcceptCryptoPaymentResponse>> makeCryptoPaymentCall() {
         log.info("request to make crypto payment received");
         return acceptCrypto.createPaymentUrl(new AcceptCryptoPaymentData(
                 propertiesConfig.getTitle(),
@@ -82,7 +85,7 @@ public class AcceptCryptoController {
                 propertiesConfig.getLogo(),
                 propertiesConfig.getCurrency(),
                 propertiesConfig.getRedirect_url() + uuid
-        ), uuid);
+        ), uuid).map(ResponseEntity::ok);
     }
 
 

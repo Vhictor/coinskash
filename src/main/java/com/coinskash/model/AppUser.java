@@ -28,7 +28,6 @@ public class AppUser {
     @NotBlank(message = "First Name is required*")
     private String lastName;
     @Column(name = "email")
-    @NotBlank(message = "Email is required*")
     @Email(message = "Please enter a valid email address*")
     private String username;
     @Column(name = "country")

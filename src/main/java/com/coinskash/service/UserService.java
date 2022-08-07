@@ -13,6 +13,7 @@ public interface UserService {
     AppUser getUser(String username);
     void changeUserPassword(AppUser appUser, String newPassword);
     boolean verifyUser(String token) throws InvalidTokenException;
-    boolean verifyUserTokenAndResetPassword(String token, String newPassword) throws InvalidTokenException;
+    boolean verifyUserTokenAndResetPassword(String token, String newPassword);
+    String createUserTokenAndSendVerificationMail(AppUser appUser);
     List<AppUser> getAllUsers();
 }

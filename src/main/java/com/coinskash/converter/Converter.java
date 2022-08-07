@@ -1,5 +1,6 @@
 package com.coinskash.converter;
 
+import com.coinskash.exception.GlobalRequestException;
 import com.coinskash.model.app.CryptoCurrency;
 import com.coinskash.response.ConverterResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,16 +24,18 @@ public class Converter {
 
     public Converter crytoToFiat(CryptoCurrency cryptoCurrency) {
         Converter converter = new Converter();
-        ConverterResponse converterResponse = webClient.get()
-                .uri("https://sandbox-api.payercoins.com/api/v1/live/payment/crypto/rate?cryptos=BTC,ETH,USDT,BUSD,USDC")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchangeToFlux(response -> {
-                    if (response.statusCode().equals(HttpStatus.OK)) {
-                        return response.bodyToFlux(ConverterResponse.class);
-                    } else {
-                        return response.createException().flatMapMany(Mono::error);
-                    }
-                }).blockFirst();
+        try {
+            ConverterResponse converterResponse = webClient.get()
+                    .uri("https://sandbox-api.payercoins.com/api/v1/live/payment/crypto/rate?cryptos=BTC,ETH,USDT,BUSD,USDC")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .exchangeToFlux(response -> {
+                        if (response.statusCode().equals(HttpStatus.OK)) {
+                            return response.bodyToFlux(ConverterResponse.class);
+                        } else {
+                            return response.createException().flatMapMany(Mono::error);
+                        }
+                    }).blockFirst();
+
         switch (cryptoCurrency.getCryptoCurrency()) {
             case "usdt":
                 converter.setRate(Double.parseDouble(converterResponse.getRate().getUsdc().getNgn()));
@@ -48,6 +51,9 @@ public class Converter {
         }
         converter.setCurrency(converter.rate * cryptoCurrency.getQuantity());
         return converter;
+        }catch (Exception ex){
+            throw  new GlobalRequestException("400",ex.getMessage(),HttpStatus.BAD_REQUEST);
 
+        }
     }
 }

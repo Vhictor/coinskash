@@ -1,6 +1,7 @@
 package com.coinskash.config;
 
 import jdk.jfr.ContentType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -12,14 +13,17 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
+
+
+    private String iswCoreBaseUrl="";
+
     @Bean
-    public WebClient webClient(){
-        //HttpClient httpClient = HttpClient.create().wiretap(true);
-        return WebClient.builder()
-                .defaultHeader(HttpHeaders.CONTENT_TYPE,MediaType.APPLICATION_JSON_VALUE)
-
-                //.clientConnector(new ReactorClientHttpConnector(httpClient))
-
+    public WebClient iswCoreWebClient() {
+        HttpClient httpClient = HttpClient.create()
+                .wiretap(true);
+        return WebClient.builder().baseUrl(iswCoreBaseUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
     }
+
 }
