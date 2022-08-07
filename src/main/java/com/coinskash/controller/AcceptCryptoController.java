@@ -1,5 +1,4 @@
 package com.coinskash.controller;
-
 import com.coinskash.config.PropertiesConfig;
 import com.coinskash.converter.Converter;
 import com.coinskash.crypto.AcceptCrypto;
@@ -17,9 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
 import java.util.UUID;
-
 @RestController
 @RequestMapping("/api")
 @Slf4j
@@ -30,7 +27,6 @@ public class AcceptCryptoController {
     private AcceptCrypto acceptCrypto;
     private UserHelper userHelper;
     private Converter converter;
-
     //initialise this field with data from the database;
     @Autowired
     public AcceptCryptoController(
@@ -46,7 +42,6 @@ public class AcceptCryptoController {
         this.userHelper = userHelper;
         this.converter = converter;
     }
-
     @PostMapping("/acceptCryptoCallbackUrl/{payment_uuid}")
     public ResponseDataFormat webhookUrlCallback(@RequestBody DepositWEbhookResponse depositWEbhookResponse, @PathVariable("payment_uuid") String uuid) {
         if (depositWEbhookResponse.getStatus().equals("confirmed")) {
@@ -62,18 +57,17 @@ public class AcceptCryptoController {
                     depositWEbhookResponse.getSenderAddress(),
                     depositWEbhookResponse.getCoin()
             );
-            return new ResponseDataFormat("OK", "Transaction confirmed.");
+            return new ResponseDataFormat("Transaction successful", HttpStatus.OK);
         }
         log.warn("unconfirmed transaction detected with reference number ", depositWEbhookResponse.getReference());
         /*
-         * check the deposit webhook response status and see if the transaction is confirmed
-         * if transaction status is confirmed then proceed for settlement
-         * check the payment uuid against records you have in the database
-         * if the uuid is present and the payment status to true and proceed to pay fiat to user account detail
+check the deposit webhook response status and see if the transaction is confirmed
+if transaction status is confirmed then proceed for settlement
+check the payment uuid against records you have in the database
+if the uuid is present and the payment status to true and proceed to pay fiat to user account detail
          */
-
+        throw new GlobalRequestException("400","bad uncompleted transaction", HttpStatus.BAD_REQUEST);
     }
-
     @GetMapping("/cryptoPaymentCall")
     public Mono<ResponseEntity<AcceptCryptoPaymentResponse>> makeCryptoPaymentCall() {
         log.info("request to make crypto payment received");
@@ -87,6 +81,4 @@ public class AcceptCryptoController {
                 propertiesConfig.getRedirect_url() + uuid
         ), uuid).map(ResponseEntity::ok);
     }
-
-
 }
