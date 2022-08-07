@@ -12,6 +12,7 @@ import com.coinskash.response.DepositWEbhookResponse;
 import com.coinskash.service.ImplTransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -68,7 +69,7 @@ public class AcceptCryptoController {
          * if the uuid is present and the payment status to true and proceed to pay fiat to user account detail
          */
 
-        return new ResponseDataFormat("OK", "Transaction confirmed.");
+        return new ResponseDataFormat("Transaction confirmed", HttpStatus.OK);
     }
 
     @GetMapping("/cryptoPaymentCall")

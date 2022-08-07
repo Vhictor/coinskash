@@ -34,6 +34,7 @@ public class AcceptCrypto {
 
     public AcceptCryptoPaymentResponse createPaymentUrl(AcceptCryptoPaymentData acceptCryptoPaymentData, String uuid) {
         log.info("attempting to create payment link for this customer on Lazer pay");
+
         AcceptCryptoPaymentResponse acceptCryptoPaymentResponse = webClient
                 .post()
                 .uri(propertiesConfig.getLazerpayCreateCryptoPaymentLinkUrl())
