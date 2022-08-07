@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResetPasswordData {
     private String token;
-    private String newPassword;
+    private String password;
 }

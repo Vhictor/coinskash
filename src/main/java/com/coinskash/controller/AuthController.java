@@ -1,6 +1,8 @@
 package com.coinskash.controller;
 
 
+import com.coinskash.exception.DataNotFoundException;
+import com.coinskash.exception.InvalidDataException;
 import com.coinskash.exception.InvalidTokenException;
 import com.coinskash.model.*;
 import com.coinskash.repository.VerificationTokenRepository;
@@ -36,8 +38,6 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-    @Value("${site.base.url}")
-    private String baseURL;
 
     @GetMapping("/")
     private String welcome() {
@@ -52,43 +52,23 @@ public class AuthController {
 
     @PostMapping("/register")
     private ResponseEntity<ResponseDataFormat> registerNewUser(@Valid @RequestBody AppUser newUserData) {
-
-        if (newUserData != null) {
+      if (newUserData != null ) {
             userService.saveUser(newUserData);
             userService.addRoleToUser(newUserData.getUsername(), "ROLE_USER");
-            createUserTokenAndSendVerificationMail(newUserData);
-        }
-        return new ResponseEntity<>(new ResponseDataFormat("success", "Account has been created"), HttpStatus.OK);
+            userService.createUserTokenAndSendVerificationMail(newUserData);
+       }
+        return new ResponseEntity<>(new ResponseDataFormat("Account has been created", HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
-    private void createUserTokenAndSendVerificationMail(AppUser newUserData) {
-        VerificationToken verificationToken = tokenService.createVerificationToken();
-        verificationToken.setUser(newUserData);
-        log.info("Token is {} ", verificationToken.getToken());
-        tokenRepository.save(verificationToken);
-        String verificationUrl = buildVerificationUrl(verificationToken);
-        log.info("The URL is  {} " +verificationUrl);
-        emailService.sendSimpleMail(newUserData.getUsername(),verificationUrl,"Your Verification URL");
-
-
-    }
-
-    private String buildVerificationUrl(VerificationToken verificationToken) {
-        String url = UriComponentsBuilder.fromHttpUrl(baseURL).path("/api/register/verify")
-                .queryParam("token",verificationToken.getToken()).toUriString();
-        return url;
-    }
 
     @PostMapping("/register/verify")
-    private String verifyUser(@RequestParam(value = "token") String token){
-       try{
+    private ResponseEntity<ResponseDataFormat> verifyUser(@RequestParam(value = "token") String token){
            log.info("Hitting this endpoint now with token {} ",token);
-           userService.verifyUser(token);
-       }catch (InvalidTokenException exception){
-           log.info("The problem is {} "+exception.getMessage());
-       }
-
-        return "Success";
+           boolean verifyUser = userService.verifyUser(token);
+           if (verifyUser){
+               return new ResponseEntity<>(new ResponseDataFormat("User has been verified", HttpStatus.OK), HttpStatus.OK);
+           }else
+            throw new InvalidTokenException("Invalid token");
     }
 
     @PostMapping("/save/role")
@@ -96,42 +76,45 @@ public class AuthController {
         if (roles != null) {
             userService.saveRole(roles);
         }
-        return new ResponseEntity<>(new ResponseDataFormat("success", "Account has been created"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDataFormat("Role has been created", HttpStatus.OK), HttpStatus.OK);
     }
 
+
+    //Password reset token to change password
 
     @PostMapping("/reset-password/token")
-    private String generateUserToken (@RequestParam(value = "email") String email){
+    private ResponseEntity<Object> generateUserToken (@RequestParam(value = "email") String email){
         AppUser appUser =  userService.getUser(email);
-        if (Objects.isNull(appUser)){
-            return "Email address is not registered";
-        }else {
-            createUserTokenAndSendVerificationMail(appUser);
-        }
+        String generatedToken =  userService.createUserTokenAndSendVerificationMail(appUser);
 
-        return "Success";
+        return new ResponseEntity<>(generatedToken, HttpStatus.OK);
     }
+
+    //To finally change password
 
 
     @PostMapping("/change-password")
-    private String resetUserPassword(@RequestParam ResetPasswordData resetPasswordData){
-        try{
+    private ResponseEntity<ResponseDataFormat>  resetUserPassword(@RequestBody ResetPasswordData resetPasswordData){
             log.info("Hitting this endpoint now with token {} ",resetPasswordData.getToken());
-            userService.verifyUserTokenAndResetPassword(resetPasswordData.getToken(),resetPasswordData.getNewPassword());
-        }catch (InvalidTokenException exception){
-            log.info("The problem is {} "+exception.getMessage());
-        }
-
-        return "Success";
+            boolean changePassword = userService.verifyUserTokenAndResetPassword(resetPasswordData.getToken(),resetPasswordData.getPassword());
+        if (changePassword){
+            return new ResponseEntity<>(new ResponseDataFormat("Password changed successfully", HttpStatus.OK), HttpStatus.OK);
+        }else
+            throw new InvalidTokenException("Invalid/Expired Token");
     }
 
 
 
-
-
-
-
-
-
+//
+//    private String createTokenAndSendMail(AppUser appUser){
+//        VerificationToken verificationToken = tokenService.createVerificationToken();
+//        verificationToken.setUser(appUser);
+//        log.info("Token is {} ", verificationToken.getToken());
+//        tokenRepository.save(verificationToken);
+//        String verificationUrl = tokenService.buildVerificationUrl(verificationToken);
+//        log.info("The URL is  {} " +verificationUrl);
+//        emailService.sendSimpleMail(appUser.getUsername(),verificationUrl,"Your Verification URL");
+//        return verificationToken.getToken();
+//    }
 
 }

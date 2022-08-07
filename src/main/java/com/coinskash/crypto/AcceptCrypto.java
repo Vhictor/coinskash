@@ -35,6 +35,29 @@ public class AcceptCrypto {
         this.propertiesConfig = propertiesConfig;
     }
 
+
+    public AcceptCryptoPaymentResponse createPaymentUrl(AcceptCryptoPaymentData acceptCryptoPaymentData, String uuid) {
+        log.info("attempting to create payment link for this customer on Lazer pay");
+
+        AcceptCryptoPaymentResponse acceptCryptoPaymentResponse = webClient
+                .post()
+                .uri(propertiesConfig.getLazerpayCreateCryptoPaymentLinkUrl())
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", propertiesConfig.getLazerpayAuthenticationBearer())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(acceptCryptoPaymentData), AcceptCryptoPaymentData.class)
+                .exchangeToMono(clientResponse -> {
+                    if (clientResponse.statusCode().is2xxSuccessful()) {
+                        implTransactionService.saveTransactionRecord(
+                                userHelper.getUserId(),
+                                new TransactionRecord(
+                                        uuid,
+                                        false,
+                                        false
+                                )
+                        );
+
+
     public Mono<AcceptCryptoPaymentResponse> createPaymentUrl(AcceptCryptoPaymentData acceptCryptoPaymentData, String uuid) {
        try {
            log.info("attempting to create payment link for this customer on Lazer pay");

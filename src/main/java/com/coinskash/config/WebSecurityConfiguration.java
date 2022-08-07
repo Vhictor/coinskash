@@ -43,6 +43,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(GET, "/api/allBanks").permitAll()
                 .antMatchers(POST, "/api/login/**").permitAll()
                 .antMatchers(POST, "/api/register/**").permitAll()
+                .antMatchers(POST, "/api/change-password/**").permitAll()
                 .antMatchers(POST, "/api/reset-password/**").permitAll()
                 .antMatchers(GET, "/api/users/**").hasAnyAuthority("ROLE_USER")
                 .anyRequest().authenticated()

@@ -72,7 +72,6 @@ public class AcceptCryptoController {
          * if the uuid is present and the payment status to true and proceed to pay fiat to user account detail
          */
 
-        throw new GlobalRequestException("400","bad uncompleted transaction", HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/cryptoPaymentCall")

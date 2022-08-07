@@ -42,9 +42,9 @@ public class CoinskashApplication {
 			userService.saveRole(new Roles(null, "ROLE_ADMIN"));
 			userService.saveRole(new Roles(null, "ROLE_SUPER_ADMIN"));
 
-			userService.saveUser(new AppUser(null, "John", "Travolta", "john@gmail.com", "Nigeria","09069167788","1234", false,null, new ArrayList<>()));
-			userService.saveUser(new AppUser(null, "Will", "Smith", "will@will.com", "Niger", "09011111111","1234",false,null, new ArrayList<>()));
-			userService.saveUser(new AppUser(null, "Jim", "Carry", "jim@gmail.com","Nigeria","09022321111", "1234",false,null, new ArrayList<>()));
+			userService.saveUser(new AppUser(null, "John", "Travolta", "john@gmail.com", "Nigeria","09069167788","1234", true,null, new ArrayList<>()));
+			userService.saveUser(new AppUser(null, "Will", "Smith", "will@will.com", "Niger", "09011111111","1234",true,null, new ArrayList<>()));
+			userService.saveUser(new AppUser(null, "Jim", "Carry", "jim@gmail.com","Nigeria","09022321111", "1234",true,null, new ArrayList<>()));
 
 			userService.addRoleToUser("john@gmail.com", "ROLE_USER");
 			userService.addRoleToUser("will@will.com", "ROLE_MANAGER");

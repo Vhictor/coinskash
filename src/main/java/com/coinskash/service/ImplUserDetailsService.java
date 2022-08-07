@@ -3,6 +3,7 @@ package com.coinskash.service;
 import com.coinskash.model.AppUser;
 import com.coinskash.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-@Service @RequiredArgsConstructor @Transactional
+@Service @RequiredArgsConstructor @Transactional @Slf4j
 public class ImplUserDetailsService implements UserDetailsService {
 
     @Autowired
@@ -26,7 +27,9 @@ public class ImplUserDetailsService implements UserDetailsService {
         if (userData == null){
             throw new UsernameNotFoundException(username);
         }
-        boolean enabled = !userData.isVerified();
+
+        log.info("I come here everytime you try to login {}");
+        boolean enabled = userData.isVerified();
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         userData.getRoles().forEach(role -> {
             authorities.add(new SimpleGrantedAuthority(role.getRole()));

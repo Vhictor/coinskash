@@ -1,5 +1,6 @@
 package com.coinskash.service;
 
+import com.coinskash.exception.InvalidDataException;
 import com.coinskash.exception.InvalidTokenException;
 import com.coinskash.model.AppUser;
 import com.coinskash.model.Roles;
@@ -27,14 +28,22 @@ public class ImplUserService implements UserService {
     private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
     private final VerificationTokenRepository verificationTokenRepository;
+    @Autowired
     private EmailService emailService;
+
+    @Autowired
     private VerificationTokenService tokenService;
+
+
 
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public AppUser saveUser(AppUser appUser) {
         log.info("Saving user {} in the database " + appUser.getUsername());
+        if (appUser.getUsername().isEmpty() || appUser.getUsername()==null){
+            throw new InvalidDataException("Email is required");
+        }
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         return userRepository.save(appUser);
     }
@@ -87,7 +96,7 @@ public class ImplUserService implements UserService {
     }
 
     @Override
-    public boolean verifyUserTokenAndResetPassword(String token, String newPassword) throws InvalidTokenException {
+    public boolean verifyUserTokenAndResetPassword(String token, String newPassword) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
         if (Objects.isNull(verificationToken)){
             throw new InvalidTokenException("Token is not valid");
@@ -98,10 +107,24 @@ public class ImplUserService implements UserService {
             return false;
         }
         AppUser appUser = optionalAppUser.get();
+        log.info("The name of the user is {} new password is {} ",appUser.getFirstName(), newPassword);
         appUser.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(appUser);
         verificationTokenRepository.removeByToken(token);
         return true;
+    }
+
+    @Override
+    public String createUserTokenAndSendVerificationMail(AppUser appUser) {
+        VerificationToken verificationToken = tokenService.createVerificationToken();
+        verificationToken.setUser(appUser);
+        log.info("Token is {} ", verificationToken.getToken());
+        verificationTokenRepository.save(verificationToken);
+        String verificationUrl = tokenService.buildVerificationUrl(verificationToken);
+        log.info("The URL is  {} " +verificationUrl);
+        emailService.sendSimpleMail(appUser.getUsername(),verificationUrl,"Your Verification URL");
+        return verificationToken.getToken();
+
     }
 
     @Override

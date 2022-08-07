@@ -5,7 +5,9 @@ import com.coinskash.model.VerificationToken;
 import com.coinskash.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -17,6 +19,8 @@ public class ImplVerificationTokenService implements VerificationTokenService{
     @Autowired
     private final VerificationTokenRepository verificationTokenRepository;
 
+    @Value("${site.base.url}")
+    private String baseURL;
 
     @Override
     public VerificationToken createVerificationToken() {
@@ -49,6 +53,12 @@ public class ImplVerificationTokenService implements VerificationTokenService{
         verificationTokenRepository.removeByToken(token);
     }
 
+    @Override
+    public String buildVerificationUrl(VerificationToken verificationToken) {
+        String url = UriComponentsBuilder.fromHttpUrl(baseURL).path("/api/register/verify")
+                .queryParam("token",verificationToken.getToken()).toUriString();
+        return url;
+    }
 
 
     // Generate random string
