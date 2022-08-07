@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface TransactionRepository extends JpaRepository<TransactionRecord,Long> {
     Optional<List<TransactionRecord>> findByAppUserId(Long userId);
     Optional<TransactionRecord> findByIdAndAppUserId(Long id,Long userId);
-    Optional<TransactionRecord> findByTransactionReference(String transactionReference);
+    Optional<TransactionRecord> findByTransactionReferenceAndHasPaidCrypto(String transactionReference,Boolean hasPaidCrypto);
     Optional<TransactionRecord> findByHasPaidCryptoAndHasPayout(Boolean hasPaidCrypto,Boolean hasPayout);
 }

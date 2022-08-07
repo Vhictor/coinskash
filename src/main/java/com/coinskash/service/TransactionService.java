@@ -10,10 +10,9 @@ public interface TransactionService {
 
     Optional<TransactionRecord> saveTransactionRecord(Long id, TransactionRecord transactionRecord);
 
-    Optional<TransactionRecord> updateTransactionPayoutStatus(Long userId, String transactionReference);
+    Optional<TransactionRecord> updateTransactionPayoutStatus(String transactionReference);
 
     Optional<TransactionRecord> updateTransactionAcceptCryptoStatus(
-            Long userId,
             String transactionReference,
             Double amountInCrypto,
             Double amountInFiat,
@@ -24,4 +23,5 @@ public interface TransactionService {
     void deleteTransactionRecord(Long transactionId, Long userId);
 
 
+    Optional<TransactionRecord> getUnpaidTransaction();
 }

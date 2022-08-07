@@ -2,12 +2,14 @@ package com.coinskash.payout;
 
 import com.coinskash.config.PropertiesConfig;
 import com.coinskash.crypto.TransactionRecord;
+import com.coinskash.helper.UserHelper;
 import com.coinskash.model.AppUser;
 import com.coinskash.model.payout.PayoutData;
 import com.coinskash.model.payout.beneficiary.BeneficiaryPayout;
 import com.coinskash.repository.BeneficiaryPayoutRepository;
 import com.coinskash.repository.TransactionRepository;
 import com.coinskash.response.PayoutResponse;
+import com.coinskash.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,25 +26,26 @@ import java.util.UUID;
 public class Payout {
 
     private WebClient webClient;
-    private TransactionRepository transactionRepository;
+    private TransactionService transactionService;
     private BeneficiaryPayoutRepository beneficiaryPayoutRepository;
     private PayoutData payoutData;
     private PropertiesConfig propertiesConfig;
+    private UserHelper userHelper;
 
     @Autowired
     public Payout(
             WebClient webClient,
-            TransactionRepository transactionRepository,
+            TransactionService transactionService,
             BeneficiaryPayoutRepository beneficiaryPayoutRepository,
             PropertiesConfig propertiesConfig
     ) {
         this.webClient = webClient;
-        this.transactionRepository = transactionRepository;
+        this.transactionService = transactionService;
         this.beneficiaryPayoutRepository = beneficiaryPayoutRepository;
         this.propertiesConfig = propertiesConfig;
     }
 
-    public PayoutResponse payout() {
+    public void payout() {
         /*
          *  get the payout data from a utility
          *  that returns the transaction to process
@@ -53,7 +56,12 @@ public class Payout {
          * */
         log.info("checking for unprocessed pay out...");
 
-        PayoutData payoutData = getPayoutData();
+
+        if (null==getPayoutData()) {
+            log.info("no transaction to process a this moment.");
+            return;
+        }
+        PayoutData payoutData = getPayoutData().get();
         PayoutResponse payoutResponse = webClient.post()
                 .uri(propertiesConfig.getPayoutUrl())
                 .accept(MediaType.APPLICATION_JSON)
@@ -67,18 +75,15 @@ public class Payout {
                         return clientResponse.createException().flatMap(Mono::error);
                     }
                 }).block();
-        return payoutResponse;
+        transactionService.updateTransactionPayoutStatus(payoutData.getCustomerReference());
 
     }
 
     private Optional<TransactionRecord> getUnpaidTransaction() {
-        return transactionRepository.
-                findByHasPaidCryptoAndHasPayout(true, false).
-                stream().
-                findFirst();
+        return transactionService.getUnpaidTransaction();
     }
 
-    private PayoutData getPayoutData() {
+    private Optional<PayoutData> getPayoutData() {
         //connect to the database and return the payout data
         if (getUnpaidTransaction().isPresent()) {
             log.info("unprocessed payout found");
@@ -89,8 +94,8 @@ public class Payout {
             //return appUserDetails;
             payoutData.setAmount(transactionRecord.getAmountInFiat());
             payoutData.setBeneficiary(beneficiaryPayout);
-            payoutData.setCustomerReference(UUID.randomUUID().toString());
-            return payoutData;
+            payoutData.setCustomerReference(transactionRecord.getTransactionReference());
+            return Optional.ofNullable(payoutData);
         }
 
         log.info("no unprocessed payout found");
