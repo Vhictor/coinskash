@@ -46,7 +46,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleConflict(
             RuntimeException ex, WebRequest request) {
         ResponseDataFormat response = new ResponseDataFormat();
-        response.setStatus(((GlobalRequestException) ex).getCode());
+        response.setStatus(((GlobalRequestException) ex).getHttpStatus());
         response.setMessage(((GlobalRequestException) ex).getMessage());
         String bodyOfResponse = "This should be application specific";
         return handleExceptionInternal(ex, response,
