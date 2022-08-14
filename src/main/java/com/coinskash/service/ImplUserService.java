@@ -28,6 +28,7 @@ public class ImplUserService implements UserService {
     private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
     private final VerificationTokenRepository verificationTokenRepository;
+
     @Autowired
     private EmailService emailService;
 
