@@ -1,4 +1,4 @@
-package com.coinskash.response;
+package com.coinskash.model.response;
 
 import com.coinskash.validation.ValidationResponseData;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

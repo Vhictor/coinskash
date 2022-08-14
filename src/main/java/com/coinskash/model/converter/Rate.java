@@ -1,6 +1,5 @@
 package com.coinskash.model.converter;
 
-import com.coinskash.response.ConverterResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 

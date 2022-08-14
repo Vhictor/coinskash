@@ -1,8 +1,6 @@
 package com.coinskash.controller;
 
-import com.coinskash.crypto.TransactionRecord;
-import com.coinskash.repository.TransactionRepository;
-import com.coinskash.service.ImplTransactionService;
+import com.coinskash.model.response.TransactionRecord;
 import com.coinskash.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
