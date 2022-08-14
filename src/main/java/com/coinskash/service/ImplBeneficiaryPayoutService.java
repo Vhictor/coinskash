@@ -14,6 +14,7 @@ public class ImplBeneficiaryPayoutService implements BeneficiaryPayoutService{
     @Autowired
     BeneficiaryPayoutRepository beneficiaryPayoutRepository;
     UserRepository userRepository;
+
     @Override
     public Optional<BeneficiaryPayout> updatePayout(Long userId, BeneficiaryPayout beneficiaryPayout) {
         try {

@@ -1,6 +1,6 @@
 package com.coinskash.repository;
 
-import com.coinskash.crypto.TransactionRecord;
+import com.coinskash.model.response.TransactionRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

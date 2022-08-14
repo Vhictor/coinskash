@@ -2,7 +2,7 @@ package com.coinskash.controller;
 
 import com.coinskash.model.app.AccountNoAndBankCode;
 import com.coinskash.model.app.AccountNoAndBankName;
-import com.coinskash.response.ValidationResponse;
+import com.coinskash.model.response.ValidationResponse;
 import com.coinskash.validation.BankData;
 import com.coinskash.validation.Validation;
 import org.springframework.beans.factory.annotation.Autowired;

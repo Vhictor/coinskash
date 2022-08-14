@@ -18,6 +18,10 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
+
+<!--	<properties>-->
+<!--		<java.version>11</java.version>-->
+<!--	</properties>-->
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -116,8 +120,6 @@
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.6.9</version>
 		</dependency>
-
-
 
 	</dependencies>
 

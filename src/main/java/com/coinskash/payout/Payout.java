@@ -1,14 +1,13 @@
 package com.coinskash.payout;
 
 import com.coinskash.config.PropertiesConfig;
-import com.coinskash.crypto.TransactionRecord;
+import com.coinskash.model.response.TransactionRecord;
 import com.coinskash.helper.UserHelper;
 import com.coinskash.model.AppUser;
 import com.coinskash.model.payout.PayoutData;
 import com.coinskash.model.payout.beneficiary.BeneficiaryPayout;
 import com.coinskash.repository.BeneficiaryPayoutRepository;
-import com.coinskash.repository.TransactionRepository;
-import com.coinskash.response.PayoutResponse;
+import com.coinskash.model.response.PayoutResponse;
 import com.coinskash.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @Slf4j
