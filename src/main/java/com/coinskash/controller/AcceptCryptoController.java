@@ -60,7 +60,7 @@ public class AcceptCryptoController {
                     depositWEbhookResponse.getSenderAddress(),
                     depositWEbhookResponse.getCoin()
             );
-            return new ResponseDataFormat("Transaction successful", HttpStatus.OK);
+            return new ResponseDataFormat(true, "Transaction successful", HttpStatus.OK);
         }
         log.warn("unconfirmed transaction detected with reference number ", depositWEbhookResponse.getReference());
         /*
