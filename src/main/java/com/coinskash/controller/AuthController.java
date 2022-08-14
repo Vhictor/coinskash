@@ -57,7 +57,7 @@ public class AuthController {
             userService.addRoleToUser(newUserData.getUsername(), "ROLE_USER");
             userService.createUserTokenAndSendVerificationMail(newUserData);
        }
-        return new ResponseEntity<>(new ResponseDataFormat("Account has been created", HttpStatus.CREATED), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseDataFormat(true,"Account has been created", HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
 
@@ -66,7 +66,7 @@ public class AuthController {
            log.info("Hitting this endpoint now with token {} ",token);
            boolean verifyUser = userService.verifyUser(token);
            if (verifyUser){
-               return new ResponseEntity<>(new ResponseDataFormat("User has been verified", HttpStatus.OK), HttpStatus.OK);
+               return new ResponseEntity<>(new ResponseDataFormat(true, "User has been verified", HttpStatus.OK), HttpStatus.OK);
            }else
             throw new InvalidTokenException("Invalid token");
     }
@@ -76,7 +76,7 @@ public class AuthController {
         if (roles != null) {
             userService.saveRole(roles);
         }
-        return new ResponseEntity<>(new ResponseDataFormat("Role has been created", HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDataFormat(true,"Role has been created", HttpStatus.OK), HttpStatus.OK);
     }
 
 
@@ -98,7 +98,7 @@ public class AuthController {
             log.info("Hitting this endpoint now with token {} ",resetPasswordData.getToken());
             boolean changePassword = userService.verifyUserTokenAndResetPassword(resetPasswordData.getToken(),resetPasswordData.getPassword());
         if (changePassword){
-            return new ResponseEntity<>(new ResponseDataFormat("Password changed successfully", HttpStatus.OK), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseDataFormat(true, "Password changed successfully", HttpStatus.OK), HttpStatus.OK);
         }else
             throw new InvalidTokenException("Invalid/Expired Token");
     }

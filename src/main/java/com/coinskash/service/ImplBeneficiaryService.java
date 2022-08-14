@@ -4,16 +4,24 @@ import com.coinskash.exception.GlobalRequestException;
 import com.coinskash.model.payout.beneficiary.Beneficiary;
 import com.coinskash.repository.BeneficiaryRepository;
 import com.coinskash.repository.UserRepository;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 @Service
+@Slf4j
 public class ImplBeneficiaryService implements BeneficiaryService{
+
     @Autowired
-    UserRepository userRepository;
-    BeneficiaryRepository beneficiaryRepository;
+    private  UserRepository userRepository;
+    @Autowired
+    private  BeneficiaryRepository beneficiaryRepository;
+
     @Override
     public Beneficiary getBeneficiaryByUserId(Long userId) {
        try {
@@ -25,7 +33,12 @@ public class ImplBeneficiaryService implements BeneficiaryService{
 
     @Override
     public Optional<Beneficiary> addBeneficiary(Beneficiary beneficiary, Long userId) {
-       try {
+       if (userRepository==null){
+           log.info("User repo seems to be null");
+       }
+
+        try {
+            log.info("Trying to add beneficiary now");
            return userRepository.findById(userId).map(appUser -> {
                beneficiary.setAppUser(appUser);
                return beneficiaryRepository.save(beneficiary);

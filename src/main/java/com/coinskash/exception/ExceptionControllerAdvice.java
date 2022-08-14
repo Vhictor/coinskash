@@ -15,14 +15,14 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ResponseDataFormat> handleInvalidTokenException (InvalidTokenException invalidTokenException){
-        ResponseDataFormat ResponseDataFormat = new ResponseDataFormat(invalidTokenException.getMessage(), HttpStatus.BAD_REQUEST);
+        ResponseDataFormat ResponseDataFormat = new ResponseDataFormat(false,invalidTokenException.getMessage(), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity<>(ResponseDataFormat, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<ResponseDataFormat> handleInvalidData (InvalidDataException invalidDataException){
-        ResponseDataFormat ResponseDataFormat = new ResponseDataFormat(invalidDataException.getMessage(), HttpStatus.BAD_REQUEST);
+        ResponseDataFormat ResponseDataFormat = new ResponseDataFormat(false,invalidDataException.getMessage(), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity<>(ResponseDataFormat, HttpStatus.BAD_REQUEST);
     }
@@ -30,14 +30,14 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler (DataNotFoundException.class)
     public ResponseEntity<ResponseDataFormat> handleDataNotFoundException (DataNotFoundException dataNotFoundException){
-        ResponseDataFormat ResponseDataFormat = new ResponseDataFormat(dataNotFoundException.getMessage(), HttpStatus.BAD_REQUEST);
+        ResponseDataFormat ResponseDataFormat = new ResponseDataFormat(false,dataNotFoundException.getMessage(), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity<>(ResponseDataFormat, HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ResponseDataFormat ResponseDataFormat = new ResponseDataFormat(ex.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
+        ResponseDataFormat ResponseDataFormat = new ResponseDataFormat(false,ex.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
         return new ResponseEntity<>(ResponseDataFormat, HttpStatus.METHOD_NOT_ALLOWED);
     }
 

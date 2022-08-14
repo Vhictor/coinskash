@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseDataFormat {
+    private boolean success;
     private String message;
     private HttpStatus status;
 }
