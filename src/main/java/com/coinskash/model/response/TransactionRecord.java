@@ -1,4 +1,4 @@
-package com.coinskash.crypto;
+package com.coinskash.model.response;
 
 import com.coinskash.model.AppUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;

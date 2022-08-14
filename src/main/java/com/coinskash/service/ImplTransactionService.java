@@ -1,6 +1,6 @@
 package com.coinskash.service;
 
-import com.coinskash.crypto.TransactionRecord;
+import com.coinskash.model.response.TransactionRecord;
 import com.coinskash.exception.GlobalRequestException;
 import com.coinskash.repository.TransactionRepository;
 import com.coinskash.repository.UserRepository;

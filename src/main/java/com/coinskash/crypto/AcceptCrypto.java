@@ -2,17 +2,25 @@ package com.coinskash.crypto;
 import com.coinskash.config.PropertiesConfig;
 import com.coinskash.exception.GlobalRequestException;
 import com.coinskash.helper.UserHelper;
+import com.coinskash.model.response.AcceptCryptoPaymentData;
+import com.coinskash.model.response.AcceptCryptoPaymentResponse;
+import com.coinskash.model.response.TransactionRecord;
 import com.coinskash.service.ImplTransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+
+
+
 @Slf4j
 @Configuration
+@Service
 public class AcceptCrypto {
     private ImplTransactionService implTransactionService;
     private WebClient webClient;
@@ -30,6 +38,10 @@ public class AcceptCrypto {
         this.userHelper = userHelper;
         this.propertiesConfig = propertiesConfig;
     }
+
+
+
+    //Sort the ID of the user
     public Mono<AcceptCryptoPaymentResponse> createPaymentUrl(AcceptCryptoPaymentData acceptCryptoPaymentData, String uuid) {
         try {
             log.info("attempting to create payment link for this customer on Lazer pay");
@@ -50,14 +62,16 @@ public class AcceptCrypto {
                                             false
                                     )
                             );
+
                            /*
                             *after creating payment link create a record in the database.
                             *set payment status to false.
-so that when the payment is confirmed in the call back url
-we can update payment status to false and process the fiat payment
-the UUID is used in the call back url to identify the payment
-and must be unique for each transaction
-*/
+                            so that when the payment is confirmed in the call back url
+                            we can update payment status to false and process the fiat payment
+                            the UUID is used in the call back url to identify the payment
+                            and must be unique for each transaction
+                        */
+
                             log.info("successfully created payment link for this customer");
                             return clientResponse.bodyToMono(AcceptCryptoPaymentResponse.class);
                         } else {

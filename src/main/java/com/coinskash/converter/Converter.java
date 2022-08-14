@@ -2,7 +2,7 @@ package com.coinskash.converter;
 
 import com.coinskash.exception.GlobalRequestException;
 import com.coinskash.model.app.CryptoCurrency;
-import com.coinskash.response.ConverterResponse;
+import com.coinskash.model.response.ConverterResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;

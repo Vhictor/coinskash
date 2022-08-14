@@ -19,7 +19,7 @@ public class ImplVerificationTokenService implements VerificationTokenService{
     @Autowired
     private final VerificationTokenRepository verificationTokenRepository;
 
-    @Value("${site.base.url}")
+    @Value("${site.base.url.prod}")
     private String baseURL;
 
     @Override

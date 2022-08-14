@@ -1,6 +1,6 @@
 package com.coinskash.service;
 
-import com.coinskash.crypto.TransactionRecord;
+import com.coinskash.model.response.TransactionRecord;
 
 import java.util.List;
 import java.util.Optional;

@@ -2,13 +2,13 @@ package com.coinskash.controller;
 import com.coinskash.config.PropertiesConfig;
 import com.coinskash.converter.Converter;
 import com.coinskash.crypto.AcceptCrypto;
-import com.coinskash.crypto.AcceptCryptoPaymentData;
-import com.coinskash.crypto.AcceptCryptoPaymentResponse;
+import com.coinskash.model.response.AcceptCryptoPaymentData;
+import com.coinskash.model.response.AcceptCryptoPaymentResponse;
 import com.coinskash.exception.GlobalRequestException;
 import com.coinskash.helper.UserHelper;
 import com.coinskash.model.ResponseDataFormat;
 import com.coinskash.model.app.CryptoCurrency;
-import com.coinskash.response.DepositWEbhookResponse;
+import com.coinskash.model.response.DepositWEbhookResponse;
 import com.coinskash.service.ImplTransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +42,9 @@ public class AcceptCryptoController {
         this.userHelper = userHelper;
         this.converter = converter;
     }
+
+    //@CrossOrigin()
+    //Allow only LazerPay to access this endpoint
     @PostMapping("/acceptCryptoCallbackUrl/{payment_uuid}")
     public ResponseDataFormat webhookUrlCallback(@RequestBody DepositWEbhookResponse depositWEbhookResponse, @PathVariable("payment_uuid") String uuid) {
         if (depositWEbhookResponse.getStatus().equals("confirmed")) {
@@ -68,6 +71,8 @@ if the uuid is present and the payment status to true and proceed to pay fiat to
          */
         throw new GlobalRequestException("400","bad uncompleted transaction", HttpStatus.BAD_REQUEST);
     }
+
+
     @GetMapping("/cryptoPaymentCall")
     public Mono<ResponseEntity<AcceptCryptoPaymentResponse>> makeCryptoPaymentCall() {
         log.info("request to make crypto payment received");

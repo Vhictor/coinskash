@@ -4,7 +4,7 @@ import com.coinskash.config.PropertiesConfig;
 import com.coinskash.exception.GlobalRequestException;
 import com.coinskash.model.app.AccountNoAndBankCode;
 import com.coinskash.model.app.AccountNoAndBankName;
-import com.coinskash.response.ValidationResponse;
+import com.coinskash.model.response.ValidationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
